@@ -10,6 +10,10 @@ import StaffForm from './StaffForm';
 const StaffList = ({ staffList, onAddStaff, onRemoveStaff }) => {
     // const [staffList, setStaffList] = useState(initialStaff); // Lifted up
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [staffToDelete, setStaffToDelete] = useState(null);
+    const [deletePassword, setDeletePassword] = useState('');
+    const [error, setError] = useState('');
     const [filter, setFilter] = useState('All');
 
     const designations = ['All', 'Doctor', 'Nurse', 'Driver', 'Paramedic', 'PCS'];
@@ -19,6 +23,23 @@ const StaffList = ({ staffList, onAddStaff, onRemoveStaff }) => {
         const staffWithId = { ...newStaff, id: Date.now() };
         onAddStaff(staffWithId);
         setIsModalOpen(false);
+    };
+
+    const handleDeleteClick = (staff) => {
+        setStaffToDelete(staff);
+        setDeletePassword('');
+        setError('');
+        setIsDeleteModalOpen(true);
+    };
+
+    const handleConfirmDelete = () => {
+        if (deletePassword === '04032023') {
+            onRemoveStaff(staffToDelete.id);
+            setIsDeleteModalOpen(false);
+            setStaffToDelete(null);
+        } else {
+            setError('Incorrect Admin Password');
+        }
     };
 
     const filteredStaff = filter === 'All'
@@ -99,7 +120,7 @@ const StaffList = ({ staffList, onAddStaff, onRemoveStaff }) => {
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation(); // Prevent card click if needed
-                                    onRemoveStaff(staff.id);
+                                    handleDeleteClick(staff);
                                 }}
                                 className="p-2 rounded-lg bg-red-500/10 hover:bg-red-500/20 text-red-400 hover:text-red-300 border border-red-500/20 hover:border-red-500/40 transition-all backdrop-blur-sm"
                                 title="Delete Staff"
@@ -122,7 +143,50 @@ const StaffList = ({ staffList, onAddStaff, onRemoveStaff }) => {
                     onCancel={() => setIsModalOpen(false)}
                 />
             </Modal>
-        </div >
+
+            {/* Delete Confirmation Modal */}
+            <Modal
+                isOpen={isDeleteModalOpen}
+                onClose={() => setIsDeleteModalOpen(false)}
+                title="Confirm Staff Deletion"
+            >
+                <div className="space-y-4">
+                    <p className="text-slate-300">
+                        Are you sure you want to delete <span className="font-bold text-white">{staffToDelete?.name}</span>?
+                        <br />
+                        <span className="text-red-400 text-sm">This action cannot be undone.</span>
+                    </p>
+
+                    <div>
+                        <label className="block text-sm font-medium text-slate-400 mb-1">Admin Password</label>
+                        <input
+                            type="password"
+                            value={deletePassword}
+                            onChange={(e) => setDeletePassword(e.target.value)}
+                            className="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-lg text-white focus:outline-none focus:border-red-500 transition-colors"
+                            placeholder="Enter Admin Password"
+                        />
+                        {error && <p className="text-red-500 text-sm mt-1">{error}</p>}
+                    </div>
+
+                    <div className="flex justify-end gap-3 mt-6">
+                        <Button
+                            variant="secondary"
+                            onClick={() => setIsDeleteModalOpen(false)}
+                        >
+                            Cancel
+                        </Button>
+                        <Button
+                            variant="danger"
+                            onClick={handleConfirmDelete}
+                            disabled={!deletePassword}
+                        >
+                            Confirm Delete
+                        </Button>
+                    </div>
+                </div>
+            </Modal>
+        </div>
     );
 };
 
