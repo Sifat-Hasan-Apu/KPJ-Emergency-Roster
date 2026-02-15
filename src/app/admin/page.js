@@ -8,6 +8,7 @@ import DutyStats from '@/components/analytics/DutyStats';
 import PrintableView from '@/components/reports/PrintableView';
 import PdfRosterView from '@/components/reports/PdfRosterView';
 import ExcelRosterView from '@/components/reports/ExcelRosterView';
+import DailyStatsSegment from '@/components/analytics/DailyStatsSegment';
 import PendingRequestsPanel from '@/components/admin/PendingRequestsPanel';
 import StaffList from '@/components/staff/StaffList';
 import { db } from '@/lib/firebase/client';
@@ -34,6 +35,7 @@ const RosterPage = () => {
 
     // Date State (Must be initialized before derived values)
     const [currentDate, setCurrentDate] = useState(new Date(2026, 1, 1));
+    const [selectedDay, setSelectedDay] = useState(new Date()); // Default to today
     const [searchTerm, setSearchTerm] = useState('');
 
     // Announcement State
@@ -646,8 +648,20 @@ const RosterPage = () => {
                                     </div>
                                 </div>
 
-                                {/* ShiftToolbar - Hidden on mobile (uses tap-to-select instead) */}
-                                <div className="hidden sm:block">
+                                {/* Daily Stats Segment */}
+                                <div className="mb-6">
+                                    <DailyStatsSegment
+                                        selectedDate={selectedDay}
+                                        onDateChange={setSelectedDay}
+                                        rosterData={rosterData}
+                                        staffList={staffList}
+                                        currentYear={currentYear}
+                                        currentMonth={currentMonth}
+                                    />
+                                </div>
+
+                                {/* ShiftToolbar - Hidden on mobile, Sticky on Desktop */}
+                                <div className="hidden sm:block sticky top-2 z-50 bg-slate-900/95 backdrop-blur shadow-2xl rounded-2xl border border-slate-700/50 p-2 mb-4 transition-all">
                                     <ShiftToolbar />
                                 </div>
 
@@ -658,6 +672,9 @@ const RosterPage = () => {
                                     currentYear={currentYear}
                                     currentMonth={currentMonth}
                                     pendingRequests={formattedPendingRequests}
+                                    selectedDay={selectedDay}
+                                    onDaySelect={setSelectedDay}
+                                    headerOffset="top-32"
                                 />
                             </>
                         )}

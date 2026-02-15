@@ -10,7 +10,7 @@ import Toast from '@/components/ui/Toast';
 import ContextMenu from '@/components/ui/ContextMenu';
 import { useIsMobile } from '@/utils/useMediaQuery';
 
-const RosterGrid = ({ rosterData, onShiftChange, currentYear, currentMonth, staffList, pendingRequests = [] }) => {
+const RosterGrid = ({ rosterData, onShiftChange, currentYear, currentMonth, staffList, pendingRequests = [], selectedDay, onDaySelect }) => {
     // All hooks MUST be called unconditionally (React hooks rules)
     const isMobile = useIsMobile();
     const days = useMemo(() => getMonthDays(currentYear, currentMonth), [currentYear, currentMonth]);
@@ -113,29 +113,41 @@ const RosterGrid = ({ rosterData, onShiftChange, currentYear, currentMonth, staf
     };
 
     return (
-        <Card className="overflow-hidden p-0 border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-md">
+        <Card className="p-0 border border-slate-700/50 shadow-xl bg-slate-900/60 backdrop-blur-md">
             {toast && <Toast message={toast.message} type={toast.type} onClose={() => setToast(null)} />}
-            <div className="w-full">
-                <div className="inline-block min-w-full align-middle">
-                    <div className="border-b border-slate-700 bg-slate-800/80 sticky top-0 z-30 flex">
-                        <div className="sticky left-0 z-40 w-64 bg-slate-800 border-r border-slate-700 p-3 font-semibold text-slate-300 shadow-lg">
+            <div className="overflow-x-auto">
+                <div className="min-w-[900px]">
+                    {/* Header Row - dates */}
+                    <div className="border-b border-slate-700 bg-slate-900 flex">
+                        <div className="sticky left-0 z-20 w-64 min-w-[256px] bg-slate-900 border-r border-slate-700 p-3 font-semibold text-slate-300 shadow-xl">
                             Staff Member
                         </div>
-                        <div className="flex flex-1 w-full">
-                            {days.map(day => (
-                                <div key={day.date} className={`h-14 flex-1 min-w-0 flex flex-col items-center justify-center border-r border-slate-700/50 
-                                    ${day.dayName === 'Fri' ? 'bg-red-900/20 text-red-400' : 'text-slate-400'}`}>
-                                    <span className="text-xs font-medium uppercase">{day.dayName}</span>
-                                    <span className="text-sm font-bold">{day.date}</span>
-                                </div>
-                            ))}
+                        <div className="flex flex-1 w-full bg-slate-900">
+                            {days.map(day => {
+                                const isSelected = selectedDay && selectedDay.getDate() === day.date && selectedDay.getMonth() === currentMonth && selectedDay.getFullYear() === currentYear;
+                                return (
+                                    <button
+                                        key={day.date}
+                                        onClick={() => onDaySelect && onDaySelect(new Date(currentYear, currentMonth, day.date))}
+                                        className={`h-14 flex-1 min-w-0 flex flex-col items-center justify-center border-r border-slate-700/50 transition-colors
+                                            ${isSelected ? 'bg-cyan-500/20 shadow-inner' : ''}
+                                            ${day.dayName === 'Fri' ? 'bg-red-900/20 text-red-400' : 'text-slate-400'}
+                                            hover:bg-slate-700/50 cursor-pointer
+                                        `}
+                                    >
+                                        <span className={`text-xs font-medium uppercase ${isSelected ? 'text-cyan-300' : ''}`}>{day.dayName}</span>
+                                        <span className={`text-sm font-bold ${isSelected ? 'text-cyan-200' : ''}`}>{day.date}</span>
+                                    </button>
+                                );
+                            })}
                         </div>
                     </div>
 
+                    {/* Staff Rows */}
                     <div>
                         {displayStaff.map((staff, index) => (
                             <div key={staff.id} className={`flex group ${index % 2 === 0 ? 'bg-transparent' : 'bg-slate-800/30'}`}>
-                                <div className="sticky left-0 z-20 w-64 bg-slate-900 border-r border-slate-700 p-2 flex items-center justify-between shadow-lg ring-1 ring-slate-700/50">
+                                <div className="sticky left-0 z-20 w-64 min-w-[256px] bg-slate-900 border-r border-slate-700 p-2 flex items-center justify-between shadow-lg ring-1 ring-slate-700/50">
                                     <div>
                                         <div className="font-medium text-sm text-slate-200 group-hover:text-cyan-400 transition-colors">{staff.name}</div>
                                         <div className="text-xs text-slate-500">{staff.designation}</div>
@@ -147,17 +159,22 @@ const RosterGrid = ({ rosterData, onShiftChange, currentYear, currentMonth, staf
                                 </div>
 
                                 <div className="flex flex-1 w-full">
-                                    {days.map(day => (
-                                        <RosterCell
-                                            key={day.date}
-                                            date={day.date}
-                                            staffId={staff.id}
-                                            assignedShiftCode={getShift(staff.id, day.date)}
-                                            onDrop={handleShiftDrop}
-                                            onContextMenu={(e) => handleContextMenu(e, staff.id, day.date)}
-                                            isPending={isPending(staff.eid, day.date)}
-                                        />
-                                    ))}
+                                    {days.map(day => {
+                                        const isSelected = selectedDay && selectedDay.getDate() === day.date && selectedDay.getMonth() === currentMonth && selectedDay.getFullYear() === currentYear;
+                                        return (
+                                            <div key={day.date} className={`flex-1 relative ${isSelected ? 'bg-cyan-500/5' : ''}`}>
+                                                {isSelected && <div className="absolute inset-0 border-x-2 border-cyan-500/20 pointer-events-none z-10" />}
+                                                <RosterCell
+                                                    date={day.date}
+                                                    staffId={staff.id}
+                                                    assignedShiftCode={getShift(staff.id, day.date)}
+                                                    onDrop={handleShiftDrop}
+                                                    onContextMenu={(e) => handleContextMenu(e, staff.id, day.date)}
+                                                    isPending={isPending(staff.eid, day.date)}
+                                                />
+                                            </div>
+                                        );
+                                    })}
                                 </div>
                             </div>
                         ))}
