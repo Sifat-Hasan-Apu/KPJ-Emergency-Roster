@@ -33,7 +33,7 @@ const StaffList = ({ staffList, onAddStaff, onRemoveStaff }) => {
     };
 
     const handleConfirmDelete = () => {
-        if (deletePassword === '04032023') {
+        if (deletePassword === '919191') {
             onRemoveStaff(staffToDelete.id);
             setIsDeleteModalOpen(false);
             setStaffToDelete(null);

@@ -8,7 +8,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/client';
 import { useAuth } from '@/context/AuthContext';
 
-const ADMIN_PASSWORD = '04032023';
+const ADMIN_PASSWORD = '919191';
 
 export default function LandingPage() {
   const router = useRouter();
@@ -192,8 +192,8 @@ export default function LandingPage() {
               {/* Role Badge */}
               <div className="text-center mb-6">
                 <div className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold ${selectedRole === 'admin'
-                    ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
-                    : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'
+                  ? 'bg-rose-500/15 text-rose-400 border border-rose-500/30'
+                  : 'bg-cyan-500/15 text-cyan-400 border border-cyan-500/30'
                   }`}>
                   {selectedRole === 'admin' ? (
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
@@ -212,8 +212,8 @@ export default function LandingPage() {
               <form onSubmit={handleSubmit} className="space-y-5">
                 <div className="relative group">
                   <div className={`absolute inset-0 rounded-xl blur opacity-20 group-hover:opacity-40 transition-opacity ${selectedRole === 'admin'
-                      ? 'bg-gradient-to-r from-rose-500 to-amber-500'
-                      : 'bg-gradient-to-r from-cyan-500 to-blue-500'
+                    ? 'bg-gradient-to-r from-rose-500 to-amber-500'
+                    : 'bg-gradient-to-r from-cyan-500 to-blue-500'
                     }`} />
                   <input
                     type="password"
@@ -246,8 +246,8 @@ export default function LandingPage() {
                   type="submit"
                   disabled={loading || !password}
                   className={`w-full font-semibold py-3.5 rounded-xl transition-all shadow-lg disabled:opacity-40 disabled:cursor-not-allowed text-white ${selectedRole === 'admin'
-                      ? 'bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 shadow-rose-500/20'
-                      : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-cyan-500/20'
+                    ? 'bg-gradient-to-r from-rose-600 to-pink-600 hover:from-rose-500 hover:to-pink-500 shadow-rose-500/20'
+                    : 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-500 hover:to-blue-500 shadow-cyan-500/20'
                     }`}
                 >
                   {loading ? (
