@@ -8,7 +8,7 @@ import { collection, query, where, getDocs } from 'firebase/firestore';
 import { db } from '@/lib/firebase/client';
 import { useAuth } from '@/context/AuthContext';
 
-const ADMIN_PASSWORD = '919191';
+const ADMIN_PASSWORD = 'Sumon7766@';
 
 export default function LandingPage() {
   const router = useRouter();

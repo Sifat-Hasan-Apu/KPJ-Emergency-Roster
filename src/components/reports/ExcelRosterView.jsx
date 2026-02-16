@@ -45,6 +45,57 @@ const ExcelRosterView = forwardRef(({ rosterData, currentYear, currentMonth, sta
                 data.push([]);
                 data.push([]);
 
+                // --- Daily Summary Calculation ---
+                const shiftTypes = [
+                    { code: 'M', label: 'Morning' },
+                    { code: 'E', label: 'Evening' },
+                    { code: 'N', label: 'Night' },
+                    { code: 'G', label: 'General' },
+                    { code: 'O', label: 'Day Off' },
+                    { code: 'SL', label: 'Sick Leave' },
+                    { code: 'CL', label: 'Casual Leave' },
+                    { code: 'AL', label: 'Annual Leave' },
+                    { code: 'UD', label: 'Unassigned' }
+                ];
+
+                // Initialize counts
+                const dailyCounts = {};
+                days.forEach(d => {
+                    dailyCounts[d.date] = {};
+                    shiftTypes.forEach(type => {
+                        dailyCounts[d.date][type.code] = 0;
+                    });
+                });
+
+                // Tally shifts
+                (staffList || []).forEach(staff => {
+                    days.forEach(d => {
+                        const key = `${currentYear}-${currentMonth}-${d.date}_${staff.id}`;
+                        const shift = rosterData[key];
+                        if (shift && dailyCounts[d.date][shift] !== undefined) {
+                            dailyCounts[d.date][shift]++;
+                        } else if (!shift) {
+                            // Count null/undefined as UD (or handle as preferred)
+                            // Ideally consistent with UI logic
+                        }
+                    });
+                });
+
+                // Add Summary Header
+                data.push(['DAILY SHIFT SUMMARY']);
+
+                // Add Summary Rows
+                shiftTypes.forEach(type => {
+                    const row = [`Total ${type.label}`, '']; // Empty second col for alignment
+                    days.forEach(d => {
+                        row.push(dailyCounts[d.date][type.code] || 0);
+                    });
+                    data.push(row);
+                });
+
+                // Add empty rows for spacing
+                data.push([]);
+
                 // Legend
                 data.push(['Legend:']);
                 data.push(['M = Morning', 'E = Evening', 'N = Night', 'G = General', 'O = Off']);
