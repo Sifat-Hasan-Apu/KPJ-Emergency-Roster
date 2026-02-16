@@ -46,16 +46,11 @@ const ExcelRosterView = forwardRef(({ rosterData, currentYear, currentMonth, sta
                 data.push([]);
 
                 // --- Daily Summary Calculation ---
+                // User requested ONLY Morning, Evening, Night in summary
                 const shiftTypes = [
                     { code: 'M', label: 'Morning' },
                     { code: 'E', label: 'Evening' },
-                    { code: 'N', label: 'Night' },
-                    { code: 'G', label: 'General' },
-                    { code: 'O', label: 'Day Off' },
-                    { code: 'SL', label: 'Sick Leave' },
-                    { code: 'CL', label: 'Casual Leave' },
-                    { code: 'AL', label: 'Annual Leave' },
-                    { code: 'UD', label: 'Unassigned' }
+                    { code: 'N', label: 'Night' }
                 ];
 
                 // Initialize counts
